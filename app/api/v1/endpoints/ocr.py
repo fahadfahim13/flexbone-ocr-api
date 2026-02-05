@@ -207,6 +207,7 @@ async def batch_extract_text(
                         text=text,
                         confidence=confidence,
                         processing_time_ms=processing_time_ms,
+                        error_code=None,
                         error=None,
                     )
                 )
@@ -232,6 +233,7 @@ async def batch_extract_text(
                     text=result.text,
                     confidence=result.confidence,
                     processing_time_ms=processing_time_ms,
+                    error_code=None,
                     error=None,
                 )
             )
@@ -246,32 +248,37 @@ async def batch_extract_text(
                     text="",
                     confidence=0.0,
                     processing_time_ms=processing_time_ms,
+                    error_code=None,
                     error=None,
                 )
             )
             successful += 1
 
         except AppException as e:
+            processing_time_ms = int((time.perf_counter() - start_time) * 1000)
             results.append(
                 BatchItemResult(
                     filename=filename,
                     success=False,
                     text=None,
                     confidence=None,
-                    processing_time_ms=None,
+                    processing_time_ms=processing_time_ms,
+                    error_code=e.code,
                     error=e.message,
                 )
             )
             failed += 1
 
         except Exception as e:
+            processing_time_ms = int((time.perf_counter() - start_time) * 1000)
             results.append(
                 BatchItemResult(
                     filename=filename,
                     success=False,
                     text=None,
                     confidence=None,
-                    processing_time_ms=None,
+                    processing_time_ms=processing_time_ms,
+                    error_code="INTERNAL_ERROR",
                     error=str(e),
                 )
             )

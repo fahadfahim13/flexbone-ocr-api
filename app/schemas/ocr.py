@@ -55,6 +55,7 @@ class BatchItemResult(BaseModel):
     text: Optional[str] = Field(None, description="Extracted text content")
     confidence: Optional[float] = Field(None, description="Confidence score")
     processing_time_ms: Optional[int] = Field(None, description="Processing time")
+    error_code: Optional[str] = Field(None, description="Error code if failed (e.g., FILE_TOO_LARGE, UNSUPPORTED_FILE_TYPE)")
     error: Optional[str] = Field(None, description="Error message if failed")
 
 
@@ -83,23 +84,26 @@ class BatchOCRResponse(BaseModel):
                         "text": "Hello World",
                         "confidence": 0.95,
                         "processing_time_ms": 800,
+                        "error_code": None,
                         "error": None,
                     },
                     {
-                        "filename": "image2.jpg",
-                        "success": True,
-                        "text": "Sample Text",
-                        "confidence": 0.92,
-                        "processing_time_ms": 750,
-                        "error": None,
-                    },
-                    {
-                        "filename": "invalid.txt",
+                        "filename": "large_image.jpg",
                         "success": False,
                         "text": None,
                         "confidence": None,
                         "processing_time_ms": None,
-                        "error": "Unsupported file type",
+                        "error_code": "FILE_TOO_LARGE",
+                        "error": "File size exceeds maximum allowed size of 10MB",
+                    },
+                    {
+                        "filename": "document.pdf",
+                        "success": False,
+                        "text": None,
+                        "confidence": None,
+                        "processing_time_ms": None,
+                        "error_code": "UNSUPPORTED_FILE_TYPE",
+                        "error": "File type 'pdf' is not supported",
                     },
                 ],
             }

@@ -108,6 +108,13 @@ curl -X POST \
 - Content-Type: `multipart/form-data`
 - Body: `images` - Multiple JPG, PNG, or GIF files (max 10 images, 10MB each)
 
+**Limits:**
+- Maximum 10 images per request
+- Maximum 10MB per individual image
+- Maximum 32MB total request size (Cloud Run limit)
+
+**Note:** If any individual file exceeds limits or has an invalid format, only that file will fail. Other valid files will still be processed successfully.
+
 **Example:**
 ```bash
 curl -X POST \
@@ -122,8 +129,8 @@ curl -X POST \
 {
   "success": true,
   "total_images": 3,
-  "successful": 2,
-  "failed": 1,
+  "successful": 1,
+  "failed": 2,
   "total_processing_time_ms": 2500,
   "results": [
     {
@@ -132,23 +139,26 @@ curl -X POST \
       "text": "Hello World",
       "confidence": 0.95,
       "processing_time_ms": 800,
+      "error_code": null,
       "error": null
     },
     {
-      "filename": "image2.jpg",
-      "success": true,
-      "text": "Sample Text",
-      "confidence": 0.92,
-      "processing_time_ms": 750,
-      "error": null
-    },
-    {
-      "filename": "invalid.txt",
+      "filename": "large_image.jpg",
       "success": false,
       "text": null,
       "confidence": null,
-      "processing_time_ms": null,
-      "error": "Unsupported file type"
+      "processing_time_ms": 5,
+      "error_code": "FILE_TOO_LARGE",
+      "error": "File size exceeds maximum allowed size of 10MB"
+    },
+    {
+      "filename": "document.pdf",
+      "success": false,
+      "text": null,
+      "confidence": null,
+      "processing_time_ms": 2,
+      "error_code": "UNSUPPORTED_FILE_TYPE",
+      "error": "File type 'pdf' is not supported"
     }
   ]
 }
