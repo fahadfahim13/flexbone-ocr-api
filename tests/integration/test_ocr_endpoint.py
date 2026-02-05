@@ -102,29 +102,13 @@ class TestOCREndpoint:
 
 
 class TestHealthEndpoints:
-    """Tests for health check endpoints"""
+    """Tests for health check endpoint"""
 
-    def test_liveness(self, client: TestClient):
-        """Test liveness probe"""
-        response = client.get("/api/v1/health/live")
+    def test_health_check(self, client: TestClient):
+        """Test health check endpoint"""
+        response = client.get("/api/v1/health")
 
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "healthy"
         assert "version" in data
-
-    def test_readiness_healthy(self, client: TestClient):
-        """Test readiness probe when all services healthy"""
-        with patch(
-            "app.services.ocr_service.vision.ImageAnnotatorClient"
-        ) as mock_client:
-            mock_instance = MagicMock()
-            mock_instance.text_detection.return_value = MagicMock()
-            mock_client.return_value = mock_instance
-
-            response = client.get("/api/v1/health/ready")
-
-            assert response.status_code == 200
-            data = response.json()
-            assert data["status"] == "healthy"
-            assert "vision_api" in data["components"]

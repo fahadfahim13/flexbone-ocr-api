@@ -100,35 +100,15 @@ curl -X POST \
 }
 ```
 
-## Health Checks
+## Health Check
 
-### Liveness Probe
-
-**GET** `/api/v1/health/live`
+**GET** `/api/v1/health`
 
 **Response:**
 ```json
 {
   "status": "healthy",
   "version": "1.0.0"
-}
-```
-
-### Readiness Probe
-
-**GET** `/api/v1/health/ready`
-
-**Response:**
-```json
-{
-  "status": "healthy",
-  "version": "1.0.0",
-  "components": {
-    "vision_api": {
-      "status": "healthy",
-      "latency_ms": 145
-    }
-  }
 }
 ```
 
