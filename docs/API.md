@@ -3,7 +3,7 @@
 ## Base URL
 
 - Local: `http://localhost:8080`
-- Production: `https://your-service-url.run.app`
+- Production: `https://flexbone-ocr-api-813818964446.us-central1.run.app`
 
 ## Authentication
 
@@ -57,7 +57,7 @@ Authorization: Bearer <token>
 ```bash
 curl -X POST \
   -F "image=@test.jpg" \
-  https://your-service-url/api/v1/ocr/extract
+  https://flexbone-ocr-api-813818964446.us-central1.run.app/api/v1/ocr/extract
 ```
 
 **Success Response (200):**

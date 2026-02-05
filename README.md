@@ -2,6 +2,10 @@
 
 Production-ready OCR text extraction API built with FastAPI and deployed on Google Cloud Run.
 
+## Live Demo
+
+**Public URL:** https://flexbone-ocr-api-813818964446.us-central1.run.app
+
 ## Features
 
 - Extract text from JPG/PNG images using Google Cloud Vision API
@@ -24,7 +28,7 @@ Production-ready OCR text extraction API built with FastAPI and deployed on Goog
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/flexbone-ocr-api.git
+   git clone https://github.com/fahadfahim13/flexbone-ocr-api.git
    cd flexbone-ocr-api
    ```
 
@@ -120,6 +124,73 @@ The project includes GitHub Actions workflows for:
 - CD: Automatic deployment to Cloud Run on push to main
 
 See `.github/workflows/` for details.
+
+## Implementation
+
+### OCR Service
+
+This API uses **Google Cloud Vision API** for text extraction. The Vision API provides:
+- High accuracy text detection using machine learning
+- Support for multiple languages
+- Confidence scores for extracted text
+- Handles various image qualities and text orientations
+
+### File Upload & Validation
+
+File uploads are validated through multiple layers:
+
+1. **File Size Check**: Rejects files larger than 10MB
+2. **Extension Validation**: Only accepts `.jpg`, `.jpeg`, and `.png` files
+3. **MIME Type Validation**: Verifies actual file content using magic bytes (not just extension)
+4. **Image Integrity Check**: Opens and validates image using Pillow to ensure it's not corrupted
+
+### Deployment Strategy
+
+The API is deployed on **Google Cloud Run** with the following configuration:
+- **Containerized**: Multi-stage Docker build with Python 3.11-slim
+- **Auto-scaling**: 0-10 instances based on traffic
+- **Memory**: 512Mi per instance
+- **Timeout**: 60 seconds per request
+- **CI/CD**: GitHub Actions automatically deploys on push to main branch
+
+## Testing Instructions
+
+### Test the Live API
+
+**Health Check:**
+```bash
+curl https://flexbone-ocr-api-813818964446.us-central1.run.app/api/v1/health
+```
+
+**Extract Text from Image:**
+```bash
+curl -X POST -F "image=@your-image.jpg" https://flexbone-ocr-api-813818964446.us-central1.run.app/api/v1/ocr/extract
+```
+
+**Example Response:**
+```json
+{
+  "success": true,
+  "text": "LOVE\nJOY\nPEACE",
+  "confidence": 0.95,
+  "processing_time_ms": 847
+}
+```
+
+### Test with Sample Images
+
+```bash
+# Test with any JPG image
+curl -X POST -F "image=@test.jpg" https://flexbone-ocr-api-813818964446.us-central1.run.app/api/v1/ocr/extract
+
+# Test with PNG image
+curl -X POST -F "image=@test.png" https://flexbone-ocr-api-813818964446.us-central1.run.app/api/v1/ocr/extract
+```
+
+### Interactive API Documentation
+
+Visit the Swagger UI for interactive testing:
+https://flexbone-ocr-api-813818964446.us-central1.run.app/docs
 
 ## License
 
