@@ -15,6 +15,7 @@ Production-ready OCR text extraction API built with FastAPI and deployed on Goog
 - Optional JWT authentication (configurable)
 - Rate limiting support
 - Confidence scores and language detection
+- **Production logging** - Google Cloud Logging integration with severity levels and trace correlation
 - Health check endpoint for Cloud Run
 - Auto-generated OpenAPI documentation
 - Comprehensive test suite
@@ -154,6 +155,20 @@ The API implements intelligent caching for identical images:
 - Caches up to 100 results with 1-hour TTL
 - Subsequent requests for the same image return instantly
 - Significantly reduces Vision API costs and latency for repeated images
+
+### Logging
+
+Production-grade logging with **Google Cloud Logging** integration:
+- Automatic severity level detection (INFO, WARNING, ERROR)
+- Request trace correlation for debugging
+- Structured JSON logs with custom labels
+- Automatic log-based metrics and alerting support
+- Local development uses colored console output
+
+View logs in the [Cloud Logging Console](https://console.cloud.google.com/logs) or via CLI:
+```bash
+gcloud run services logs read flexbone-ocr-api --region us-central1
+```
 
 ### Deployment Strategy
 

@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi.errors import RateLimitExceeded
 
 from app.config import get_settings
-from app.core.logging import setup_logging, get_logger
+from app.core.logging import setup_logging, get_logger, CloudLoggingMiddleware
 from app.core.exceptions import AppException
 from app.middleware.request_id import RequestIDMiddleware
 from app.middleware.rate_limit import limiter, rate_limit_exceeded_handler
@@ -42,11 +42,14 @@ app = FastAPI(
 Extract text from images using Google Cloud Vision API.
 
 ### Features
-- Upload JPG/PNG images up to 10MB
+- Upload JPG/PNG/GIF images up to 10MB
+- Batch processing for multiple images
 - Get extracted text with confidence scores
-- Word count and language detection
+- Intelligent caching for identical images
+- Text preprocessing and cleanup
 - Optional JWT authentication
 - Rate limiting support
+- Production-grade Cloud Logging
 """,
     docs_url="/docs",
     redoc_url="/redoc",
@@ -54,6 +57,7 @@ Extract text from images using Google Cloud Vision API.
     lifespan=lifespan,
 )
 
+app.add_middleware(CloudLoggingMiddleware)
 app.add_middleware(RequestIDMiddleware)
 app.add_middleware(
     CORSMiddleware,
