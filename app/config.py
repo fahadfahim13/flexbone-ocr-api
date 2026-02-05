@@ -25,8 +25,8 @@ class Settings(BaseSettings):
 
     # File Upload Settings
     max_file_size_mb: int = Field(default=10)
-    allowed_extensions: List[str] = Field(default=["jpg", "jpeg", "png"])
-    allowed_mime_types: List[str] = Field(default=["image/jpeg", "image/png"])
+    allowed_extensions: List[str] = Field(default=["jpg", "jpeg", "png", "gif"])
+    allowed_mime_types: List[str] = Field(default=["image/jpeg", "image/png", "image/gif"])
 
     # Auth Settings (toggleable)
     auth_enabled: bool = Field(default=False)

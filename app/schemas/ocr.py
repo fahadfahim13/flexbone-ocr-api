@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
 
 class OCRResultData(BaseModel):
@@ -45,3 +45,63 @@ class OCRNoTextResponse(BaseModel):
     message: Optional[str] = Field(
         default="No text could be detected in the uploaded image"
     )
+
+
+class BatchItemResult(BaseModel):
+    """Result for a single image in batch processing"""
+
+    filename: str = Field(..., description="Original filename")
+    success: bool = Field(..., description="Whether extraction succeeded")
+    text: Optional[str] = Field(None, description="Extracted text content")
+    confidence: Optional[float] = Field(None, description="Confidence score")
+    processing_time_ms: Optional[int] = Field(None, description="Processing time")
+    error: Optional[str] = Field(None, description="Error message if failed")
+
+
+class BatchOCRResponse(BaseModel):
+    """Response for batch OCR processing"""
+
+    success: bool = Field(default=True)
+    total_images: int = Field(..., description="Total images processed")
+    successful: int = Field(..., description="Successfully processed count")
+    failed: int = Field(..., description="Failed processing count")
+    total_processing_time_ms: int = Field(..., description="Total processing time")
+    results: List[BatchItemResult] = Field(..., description="Individual results")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "success": True,
+                "total_images": 3,
+                "successful": 2,
+                "failed": 1,
+                "total_processing_time_ms": 2500,
+                "results": [
+                    {
+                        "filename": "image1.jpg",
+                        "success": True,
+                        "text": "Hello World",
+                        "confidence": 0.95,
+                        "processing_time_ms": 800,
+                        "error": None,
+                    },
+                    {
+                        "filename": "image2.jpg",
+                        "success": True,
+                        "text": "Sample Text",
+                        "confidence": 0.92,
+                        "processing_time_ms": 750,
+                        "error": None,
+                    },
+                    {
+                        "filename": "invalid.txt",
+                        "success": False,
+                        "text": None,
+                        "confidence": None,
+                        "processing_time_ms": None,
+                        "error": "Unsupported file type",
+                    },
+                ],
+            }
+        }
+    }

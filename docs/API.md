@@ -51,7 +51,7 @@ Authorization: Bearer <token>
 
 **Request:**
 - Content-Type: `multipart/form-data`
-- Body: `image` - JPG or PNG file (max 10MB)
+- Body: `image` - JPG, PNG, or GIF file (max 10MB)
 
 **Example:**
 ```bash
@@ -97,6 +97,60 @@ curl -X POST \
     "request_id": "550e8400-e29b-41d4-a716-446655440000",
     "processing_time_ms": 12
   }
+}
+```
+
+### Batch Extract Text from Multiple Images
+
+**POST** `/api/v1/ocr/batch`
+
+**Request:**
+- Content-Type: `multipart/form-data`
+- Body: `images` - Multiple JPG, PNG, or GIF files (max 10 images, 10MB each)
+
+**Example:**
+```bash
+curl -X POST \
+  -F "images=@image1.jpg" \
+  -F "images=@image2.jpg" \
+  -F "images=@image3.png" \
+  https://flexbone-ocr-api-813818964446.us-central1.run.app/api/v1/ocr/batch
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "total_images": 3,
+  "successful": 2,
+  "failed": 1,
+  "total_processing_time_ms": 2500,
+  "results": [
+    {
+      "filename": "image1.jpg",
+      "success": true,
+      "text": "Hello World",
+      "confidence": 0.95,
+      "processing_time_ms": 800,
+      "error": null
+    },
+    {
+      "filename": "image2.jpg",
+      "success": true,
+      "text": "Sample Text",
+      "confidence": 0.92,
+      "processing_time_ms": 750,
+      "error": null
+    },
+    {
+      "filename": "invalid.txt",
+      "success": false,
+      "text": null,
+      "confidence": null,
+      "processing_time_ms": null,
+      "error": "Unsupported file type"
+    }
+  ]
 }
 ```
 

@@ -2,12 +2,39 @@ from google.cloud import vision
 from google.cloud.vision_v1 import types
 from typing import Optional, Tuple
 import time
+import re
 
 from app.core.exceptions import OCRException, NoTextFoundException
 from app.core.logging import get_logger
 from app.schemas.ocr import OCRResultData
 
 logger = get_logger(__name__)
+
+
+def preprocess_text(text: str) -> str:
+    """
+    Clean up and normalize extracted text.
+
+    - Normalize line breaks
+    - Remove excessive whitespace
+    - Trim leading/trailing whitespace
+    - Normalize multiple spaces to single space
+    """
+    # Normalize different line break styles to \n
+    text = text.replace('\r\n', '\n').replace('\r', '\n')
+
+    # Remove excessive blank lines (more than 2 consecutive)
+    text = re.sub(r'\n{3,}', '\n\n', text)
+
+    # Normalize multiple spaces to single space (but preserve line breaks)
+    lines = text.split('\n')
+    lines = [re.sub(r' {2,}', ' ', line.strip()) for line in lines]
+    text = '\n'.join(lines)
+
+    # Remove leading/trailing whitespace
+    text = text.strip()
+
+    return text
 
 
 class OCRService:
@@ -55,7 +82,7 @@ class OCRService:
                 logger.info("no_text_detected", processing_time_ms=processing_time_ms)
                 raise NoTextFoundException()
 
-            full_text = response.full_text_annotation.text.strip()
+            full_text = preprocess_text(response.full_text_annotation.text)
 
             # Calculate confidence
             confidences = []

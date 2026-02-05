@@ -8,13 +8,16 @@ Production-ready OCR text extraction API built with FastAPI and deployed on Goog
 
 ## Features
 
-- Extract text from JPG/PNG images using Google Cloud Vision API
+- Extract text from JPG/PNG/GIF images using Google Cloud Vision API
+- **Batch processing** - Extract text from multiple images in one request
+- **Text preprocessing** - Automatic cleanup and normalization of extracted text
+- **Intelligent caching** - Identical images return cached results instantly
 - Optional JWT authentication (configurable)
 - Rate limiting support
 - Confidence scores and language detection
-- Health check endpoints for Cloud Run
+- Health check endpoint for Cloud Run
 - Auto-generated OpenAPI documentation
-- Comprehensive test suite (80%+ coverage)
+- Comprehensive test suite
 
 ## Quick Start
 
@@ -144,6 +147,14 @@ File uploads are validated through multiple layers:
 3. **MIME Type Validation**: Verifies actual file content using magic bytes (not just extension)
 4. **Image Integrity Check**: Opens and validates image using Pillow to ensure it's not corrupted
 
+### Caching
+
+The API implements intelligent caching for identical images:
+- Uses SHA256 hash of image content as cache key
+- Caches up to 100 results with 1-hour TTL
+- Subsequent requests for the same image return instantly
+- Significantly reduces Vision API costs and latency for repeated images
+
 ### Deployment Strategy
 
 The API is deployed on **Google Cloud Run** with the following configuration:
@@ -185,6 +196,19 @@ curl -X POST -F "image=@test.jpg" https://flexbone-ocr-api-813818964446.us-centr
 
 # Test with PNG image
 curl -X POST -F "image=@test.png" https://flexbone-ocr-api-813818964446.us-central1.run.app/api/v1/ocr/extract
+
+# Test with GIF image
+curl -X POST -F "image=@test.gif" https://flexbone-ocr-api-813818964446.us-central1.run.app/api/v1/ocr/extract
+```
+
+### Batch Processing (Multiple Images)
+
+```bash
+curl -X POST \
+  -F "images=@image1.jpg" \
+  -F "images=@image2.jpg" \
+  -F "images=@image3.png" \
+  https://flexbone-ocr-api-813818964446.us-central1.run.app/api/v1/ocr/batch
 ```
 
 ### Interactive API Documentation
